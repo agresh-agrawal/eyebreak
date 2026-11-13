@@ -86,7 +86,7 @@ class MainActivity : Activity() {
         // hidden: long-press the title for a fast test cycle (20 s / 15 s)
         title.setOnLongClickListener {
             prefs.testMode = !prefs.testMode
-            EyeBreakService.start(this, EyeBreakService.ACTION_RESTART)
+            if (prefs.enabled) EyeBreakService.start(this, EyeBreakService.ACTION_RESTART)
             Toast.makeText(this, if (prefs.testMode) "Test mode: 20 s work, 15 s break" else "Normal mode: 20 minutes", Toast.LENGTH_SHORT).show()
             true
         }
@@ -126,7 +126,7 @@ class MainActivity : Activity() {
         toggles.addView(View(this).apply { setBackgroundColor(0x12FFFFFF) }, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 1))
         badgeSwitch = toggle(toggles, "Floating badge", "Minutes left, on top of every app. Drag to move.") { on ->
             prefs.badgeOn = on
-            EyeBreakService.start(this, EyeBreakService.ACTION_REFRESH)
+            if (prefs.enabled) EyeBreakService.start(this, EyeBreakService.ACTION_REFRESH)
         }
         col.addView(toggles, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT).apply { topMargin = px(20f) })
 

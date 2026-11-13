@@ -41,15 +41,15 @@ class Badge(private val svc: EyeBreakService) {
         if (Build.VERSION.SDK_INT >= 28) layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
     }
     private var attached = false
-    private var x = svc.prefs.badgeX
-    private var y = svc.prefs.badgeY
+    private var bx = svc.prefs.badgeX
+    private var by = svc.prefs.badgeY
     private var expand = 0f
     private var openUntil = 0L
     private var animating = false
     private var lastFrame = 0L
 
     init {
-        if (x < 0 || y < 0) resetPosition() else clamp(false)
+        if (bx < 0 || by < 0) resetPosition() else clamp(false)
     }
 
     private fun screenW(): Int =
@@ -58,19 +58,19 @@ class Badge(private val svc: EyeBreakService) {
     private fun screenH(): Int =
         if (Build.VERSION.SDK_INT >= 30) wm.currentWindowMetrics.bounds.height() else svc.resources.displayMetrics.heightPixels
 
-    private fun onRight() = x + size / 2 > screenW() / 2
+    private fun onRight() = bx + size / 2 > screenW() / 2
 
     private fun resetPosition() {
-        x = screenW() - size - margin
-        y = (screenH() * 0.38f).toInt()
+        bx = screenW() - size - margin
+        by = (screenH() * 0.38f).toInt()
     }
 
     private fun clamp(snap: Boolean) {
         val w = screenW()
         val h = screenH()
-        if (snap) x = if (x + size / 2 > w / 2) w - size - margin else margin
-        x = x.coerceIn(margin, (w - size - margin).coerceAtLeast(margin))
-        y = y.coerceIn(svc.dp(24f).toInt(), (h - size - svc.dp(48f).toInt()).coerceAtLeast(0))
+        if (snap) bx = if (bx + size / 2 > w / 2) w - size - margin else margin
+        bx = bx.coerceIn(margin, (w - size - margin).coerceAtLeast(margin))
+        by = by.coerceIn(svc.dp(24f).toInt(), (h - size - svc.dp(48f).toInt()).coerceAtLeast(0))
     }
 
     private fun wanted(): Boolean =
@@ -147,8 +147,8 @@ class Badge(private val svc: EyeBreakService) {
 
     private fun layout() {
         val bw = bodyW()
-        lp.x = (if (onRight()) x + size - bw else x) - pad
-        lp.y = y - pad
+        lp.x = (if (onRight()) bx + size - bw else bx) - pad
+        lp.y = by - pad
         lp.width = bw + 2 * pad
         lp.height = size + 2 * pad
         if (attached) {
@@ -264,8 +264,8 @@ class Badge(private val svc: EyeBreakService) {
                 MotionEvent.ACTION_DOWN -> {
                     downX = e.rawX
                     downY = e.rawY
-                    startX = x
-                    startY = y
+                    startX = bx
+                    startY = by
                     dragging = false
                 }
                 MotionEvent.ACTION_MOVE -> {
@@ -277,8 +277,8 @@ class Badge(private val svc: EyeBreakService) {
                         openUntil = 0L
                     }
                     if (dragging) {
-                        x = startX + dx.toInt()
-                        y = startY + dy.toInt()
+                        bx = startX + dx.toInt()
+                        by = startY + dy.toInt()
                         layout()
                         invalidate()
                     }
@@ -287,8 +287,8 @@ class Badge(private val svc: EyeBreakService) {
                     if (dragging) {
                         dragging = false
                         clamp(true)
-                        svc.prefs.badgeX = x
-                        svc.prefs.badgeY = y
+                        svc.prefs.badgeX = bx
+                        svc.prefs.badgeY = by
                         layout()
                         kick()
                     } else if (expand > 0.6f) {
