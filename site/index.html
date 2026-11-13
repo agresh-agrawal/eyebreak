@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EyeBreak: rest your eyes every 20 minutes</title>
-<meta name="description" content="A tiny Windows app that gives your eyes a guided 1-minute break every 20 minutes, and waits politely while you're in a meeting or presenting.">
+<meta name="description" content="A tiny Windows and Android app that gives your eyes a guided 1-minute break every 20 minutes, and waits politely while you're in a meeting or presenting.">
 <link rel="icon" href="favicon.ico">
 <meta property="og:title" content="EyeBreak">
-<meta property="og:description" content="A guided 1-minute eye break every 20 minutes. Waits for your meetings. Free for Windows.">
+<meta property="og:description" content="A guided 1-minute eye break every 20 minutes. Waits for your meetings. Free for Windows and Android.">
 <meta property="og:image" content="img/break-1.png">
 <style>
   :root {
@@ -124,17 +124,20 @@
   </nav>
 
   <header class="hero">
-    <span class="eyebrow">Free · Windows 10 &amp; 11 · 0.5 MB</span>
+    <span class="eyebrow">Free · Windows 10 &amp; 11 · Android 8+</span>
     <h1>Your eyes get a break <em>every 20 minutes.</em></h1>
     <p class="lead">EyeBreak fades your screen to a calm, guided 1-minute rest. It waits for your meetings and presentations, and everything you're running keeps going underneath.</p>
     <div class="cta">
-      <a class="btn primary" href="https://github.com/agresh-agrawal/eyebreak/releases/latest/download/EyeBreak.exe">
+      <a class="btn primary" data-os="win" href="https://github.com/agresh-agrawal/eyebreak/releases/latest/download/EyeBreak.exe">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
         Download for Windows
       </a>
-      <a class="btn ghost" href="https://github.com/agresh-agrawal/eyebreak">View source</a>
+      <a class="btn ghost" data-os="android" href="https://github.com/agresh-agrawal/eyebreak/releases/latest/download/EyeBreak.apk">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+        Download for Android
+      </a>
     </div>
-    <div class="meta">EyeBreak.exe · v3.0 · no installer, no account, nothing sent anywhere</div>
+    <div class="meta">EyeBreak.exe (0.5 MB) · EyeBreak.apk (44 KB) · no account, nothing sent anywhere</div>
 
     <figure class="shot">
       <img src="img/break-1.png" width="1920" height="1080" alt="The EyeBreak break screen: a breathing circle with a countdown and the instruction 'Close your eyes'">
@@ -222,6 +225,12 @@
       <div class="step"><b>Run it</b><span>If Windows SmartScreen appears, click <i>More info</i>, then <i>Run anyway</i>. The app isn't code-signed yet.</span></div>
       <div class="step"><b>That's it</b><span>The badge appears on the right edge. EyeBreak copies itself to your user folder and starts with Windows.</span></div>
     </div>
+    <h3 style="margin:36px 0 14px;font-size:19px;font-weight:600">On Android</h3>
+    <div class="steps">
+      <div class="step"><b>Download EyeBreak.apk</b><span>Open this page on your phone and tap <i>Download for Android</i>. It's 44 KB.</span></div>
+      <div class="step"><b>Install it</b><span>Open the file. If Android asks, allow your browser to install unknown apps. EyeBreak isn't on Google Play yet.</span></div>
+      <div class="step"><b>Allow two things</b><span>"Display over other apps" for the break screen and badge, and notifications. The app walks you through it.</span></div>
+    </div>
   </section>
 
   <section id="faq">
@@ -230,19 +239,35 @@
     <details><summary>Does it pause or slow down my other apps?</summary><p>No. The break screen is just a black window on top. Nothing is paused, closed or put to sleep. EyeBreak itself uses roughly 0% CPU while it waits.</p></details>
     <details><summary>What happens if I lock my PC or it goes to sleep?</summary><p>If you're away for a minute or more, that counts as a rest, so the 20 minutes start fresh when you're back.</p></details>
     <details><summary>Does it collect any data?</summary><p>No. There's no network access at all. Meeting detection reads Windows' own "mic/camera in use" status and window titles locally on your PC.</p></details>
+    <details><summary>How does the Android app work?</summary><p>Same idea: a small floating badge with the minutes left, and a guided 1-minute break screen every 20 minutes. It waits while you're on a phone or video call, the camera or mic is in use, or you're casting. Screen off for a minute counts as a rest. Touch and hold for 3 seconds to skip a break.</p></details>
     <details><summary>How do I update or uninstall it?</summary><p>To update, download the new EyeBreak.exe and run it; it replaces the old version. To remove it, click the badge and choose <i>Uninstall</i>.</p></details>
   </section>
 
   <div class="final">
     <h2>Give your eyes a minute.</h2>
     <p class="sec-lead" style="margin: 0 auto 26px">Free, tiny and out of your way.</p>
-    <a class="btn primary" href="https://github.com/agresh-agrawal/eyebreak/releases/latest/download/EyeBreak.exe">Download for Windows</a>
+    <div class="cta">
+      <a class="btn primary" data-os="win" href="https://github.com/agresh-agrawal/eyebreak/releases/latest/download/EyeBreak.exe">Download for Windows</a>
+      <a class="btn ghost" data-os="android" href="https://github.com/agresh-agrawal/eyebreak/releases/latest/download/EyeBreak.apk">Download for Android</a>
+    </div>
   </div>
 
   <footer>
-    <span>EyeBreak for Windows</span>
+    <span>EyeBreak for Windows and Android</span>
     <span><a href="https://github.com/agresh-agrawal/eyebreak">Source on GitHub</a> · <a href="https://github.com/agresh-agrawal/eyebreak/releases">All releases</a></span>
   </footer>
 </div>
+<script>
+  // On an Android phone, put the Android download first.
+  if (/Android/i.test(navigator.userAgent)) {
+    document.querySelectorAll('.cta').forEach(function (row) {
+      var w = row.querySelector('[data-os=win]'), a = row.querySelector('[data-os=android]');
+      if (!w || !a) return;
+      w.classList.replace('primary', 'ghost');
+      a.classList.replace('ghost', 'primary');
+      row.insertBefore(a, w);
+    });
+  }
+</script>
 </body>
 </html>
