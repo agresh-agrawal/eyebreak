@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EyeBreak: rest your eyes every 20 minutes</title>
+<meta name="description" content="A tiny Windows app that gives your eyes a guided 1-minute break every 20 minutes, and waits politely while you're in a meeting or presenting.">
+<link rel="icon" href="favicon.ico">
+<meta property="og:title" content="EyeBreak">
+<meta property="og:description" content="A guided 1-minute eye break every 20 minutes. Waits for your meetings. Free for Windows.">
+<meta property="og:image" content="img/break-1.png">
+<style>
+  :root {
+    --bg: #0b0c0f;
+    --panel: #15171c;
+    --line: rgba(255,255,255,.08);
+    --text: #eceff3;
+    --sub: #9aa1ad;
+    --dim: #6b717c;
+    --teal: #2ec4b0;
+    --teal-soft: #8ce2d4;
+    --amber: #f5b946;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.6 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--teal-soft); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  img { max-width: 100%; height: auto; display: block; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; padding: 22px 0; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: .2px; color: var(--text); text-decoration: none; }
+  .brand img { width: 28px; height: 28px; }
+  nav .links a { color: var(--sub); text-decoration: none; margin-left: 22px; font-size: 15px; }
+  nav .links a:hover { color: var(--text); }
+
+  .hero { text-align: center; padding: 64px 0 40px; position: relative; }
+  .hero::before {
+    content: ""; position: absolute; inset: -40px 0 auto 0; height: 520px; z-index: -1;
+    background: radial-gradient(closest-side, rgba(46,196,176,.16), transparent 70%) center 40%/700px 520px no-repeat;
+  }
+  .eyebrow { display: inline-block; color: var(--teal-soft); background: rgba(46,196,176,.1); border: 1px solid rgba(46,196,176,.25);
+    padding: 4px 12px; border-radius: 99px; font-size: 13px; letter-spacing: .3px; }
+  h1 { font-size: clamp(36px, 6vw, 62px); line-height: 1.07; margin: 20px auto 16px; max-width: 820px; font-weight: 650; letter-spacing: -1.2px; }
+  h1 em { font-style: normal; color: var(--teal); }
+  .lead { color: var(--sub); font-size: clamp(17px, 2.2vw, 20px); max-width: 640px; margin: 0 auto 32px; }
+  .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 24px; border-radius: 12px; font-weight: 600;
+    text-decoration: none; font-size: 16px; transition: transform .15s ease, background .15s ease; }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--teal); color: #05201c; box-shadow: 0 8px 30px rgba(46,196,176,.25); }
+  .btn.primary:hover { background: #3ad6c1; }
+  .btn.ghost { color: var(--text); border: 1px solid var(--line); background: rgba(255,255,255,.03); }
+  .meta { color: var(--dim); font-size: 13px; margin-top: 14px; }
+
+  .shot { margin: 56px auto 0; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--line);
+    box-shadow: 0 30px 80px rgba(0,0,0,.6); max-width: 960px; position: relative; }
+  .shot figcaption { position: absolute; left: 16px; bottom: 14px; font-size: 13px; color: var(--dim); }
+
+  section { padding: 80px 0 0; }
+  h2 { font-size: clamp(26px, 3.6vw, 36px); letter-spacing: -.6px; margin: 0 0 10px; font-weight: 650; }
+  .sec-lead { color: var(--sub); margin: 0 0 36px; max-width: 620px; }
+
+  .split { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: center; }
+  .stage { background: linear-gradient(180deg, #1b1e25, #121419); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 36px 24px; display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .stage .row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; justify-content: center; }
+  .stage .label { font-size: 12px; color: var(--dim); text-align: center; margin-top: -6px; }
+  .points { list-style: none; padding: 0; margin: 0; display: grid; gap: 18px; }
+  .points li { display: grid; grid-template-columns: 28px 1fr; gap: 12px; }
+  .points b { display: block; font-weight: 600; }
+  .points span { color: var(--sub); font-size: 15px; }
+  .dot { width: 28px; height: 28px; border-radius: 9px; background: rgba(46,196,176,.12); display: grid; place-items: center; color: var(--teal); font-size: 14px; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; }
+  .card h3 { margin: 12px 0 6px; font-size: 17px; font-weight: 600; }
+  .card p { margin: 0; color: var(--sub); font-size: 15px; }
+  .ico { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; background: rgba(46,196,176,.12); }
+  .ico svg { width: 20px; height: 20px; stroke: var(--teal); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .ico.amber { background: rgba(245,185,70,.12); }
+  .ico.amber svg { stroke: var(--amber); }
+
+  .steps { counter-reset: s; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .step { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 22px 22px 64px; position: relative; }
+  .step::before { counter-increment: s; content: counter(s); position: absolute; left: 20px; top: 20px; width: 30px; height: 30px; border-radius: 50%;
+    background: var(--teal); color: #05201c; font-weight: 700; display: grid; place-items: center; font-size: 14px; }
+  .step b { display: block; margin-bottom: 4px; }
+  .step span { color: var(--sub); font-size: 15px; }
+
+  details { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; }
+  summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  summary::after { content: "+"; color: var(--dim); font-weight: 400; }
+  details[open] summary::after { content: "\2212"; }
+  details p { color: var(--sub); margin: 10px 0 0; font-size: 15px; }
+  kbd { background: #23262e; border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 6px; padding: 1px 7px; font: 13px/1.6 ui-monospace, Consolas, monospace; color: var(--text); }
+
+  .final { text-align: center; padding: 90px 0 30px; }
+  footer { border-top: 1px solid var(--line); margin-top: 60px; padding: 26px 0 40px; color: var(--dim); font-size: 14px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  footer a { color: var(--sub); text-decoration: none; }
+
+  @media (max-width: 860px) {
+    .split, .grid, .steps { grid-template-columns: 1fr; }
+    nav .links a:not(.gh) { display: none; }
+    .hero { padding-top: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#"><img src="img/icon-64.png" alt="" width="28" height="28">EyeBreak</a>
+    <div class="links">
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+      <a class="gh" href="https://github.com/agresh-agrawal/eyebreak">GitHub</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <span class="eyebrow">Free · Windows 10 &amp; 11 · 0.5 MB</span>
+    <h1>Your eyes get a break <em>every 20 minutes.</em></h1>
+    <p class="lead">EyeBreak fades your screen to a calm, guided 1-minute rest. It waits for your meetings and presentations, and everything you're running keeps going underneath.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/agresh-agrawal/eyebreak/releases/latest/download/EyeBreak.exe">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 20h14"/></svg>
+        Download for Windows
+      </a>
+      <a class="btn ghost" href="https://github.com/agresh-agrawal/eyebreak">View source</a>
+    </div>
+    <div class="meta">EyeBreak.exe · v3.0 · no installer, no account, nothing sent anywhere</div>
+
+    <figure class="shot">
+      <img src="img/break-1.png" width="1920" height="1080" alt="The EyeBreak break screen: a breathing circle with a countdown and the instruction 'Close your eyes'">
+    </figure>
+  </header>
+
+  <section id="how">
+    <div class="split">
+      <div class="stage">
+        <div class="row">
+          <img src="img/pill-work.png" width="54" height="54" alt="Collapsed badge showing 17 minutes left">
+          <img src="img/pill-hover.png" width="152" height="54" alt="Badge opened on hover: 17 min until eye break">
+        </div>
+        <div class="label">A tiny badge that opens when you hover over it</div>
+        <div class="row">
+          <img src="img/pill-hold-open.png" width="152" height="54" alt="Badge on hold during a Teams call">
+          <img src="img/pill-warn.png" width="152" height="54" alt="Badge counting down the last minute">
+        </div>
+        <div class="label">On hold for a call · last-minute countdown</div>
+      </div>
+      <div>
+        <h2>Small, quiet, always there</h2>
+        <p class="sec-lead">A 34 px ring sits on top of everything, fullscreen games included. Drag it anywhere and it remembers the spot.</p>
+        <ul class="points">
+          <li><div class="dot">1</div><div><b>See the time at a glance</b><span>The ring fills up as your 20 minutes pass, with the minutes left in the middle.</span></div></li>
+          <li><div class="dot">2</div><div><b>One click for everything</b><span>Take a break now, restart the timer, or move it back to the edge.</span></div></li>
+          <li><div class="dot">3</div><div><b>A heads-up, not a surprise</b><span>In the last minute the badge opens and counts down so you can finish your sentence.</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Smart enough to stay out of the way</h2>
+    <p class="sec-lead">The timer always runs. When the break is due, EyeBreak checks whether now is a bad moment first.</p>
+    <div class="grid">
+      <div class="card">
+        <div class="ico amber"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg></div>
+        <h3>Waits for meetings</h3>
+        <p>Teams, Zoom, Meet, Webex, Slack, Discord and more. If your camera or call mic is on, the break waits and starts about a minute after the call ends.</p>
+      </div>
+      <div class="card">
+        <div class="ico amber"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M12 16v4M8 20h8"/></svg></div>
+        <h3>Never interrupts a presentation</h3>
+        <p>PowerPoint slideshows, presentation mode and fullscreen Slides, Keynote or Canva. Even the badge hides, so your audience never sees it.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3>Learns what matters to you</h3>
+        <p>If an unknown app is using your mic, it asks once: "Is this a meeting?" Say yes and it remembers that app from then on.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M4 17h16M6 13l3-3 3 2 4-5 2 2"/></svg></div>
+        <h3>Your work keeps running</h3>
+        <p>The break is only a black window on top. Builds, downloads, renders and cloud jobs carry on untouched.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="9"/></svg></div>
+        <h3>A guided minute</h3>
+        <p>Look far away, close your eyes and breathe with the circle, then blink and roll. A soft chime tells you when to open your eyes.</p>
+      </div>
+      <div class="card">
+        <div class="ico"><svg viewBox="0 0 24 24"><path d="M7 11V8a5 5 0 0 1 10 0v3"/><rect x="5" y="11" width="14" height="10" rx="2"/></svg></div>
+        <h3>An emergency exit</h3>
+        <p>The keyboard pauses during the break so you actually rest. Hold <kbd>Esc</kbd> for 3 seconds if you really must skip it.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="split">
+      <div>
+        <h2>Everything in one small panel</h2>
+        <p class="sec-lead">Click the badge (or the tray icon) for your status, today's break count, and the few actions you might need. Click anywhere else to close it.</p>
+      </div>
+      <div class="stage"><img src="img/panel.png" width="276" height="247" alt="EyeBreak panel: 17 min until your next eye break, 3 breaks today, with actions"></div>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Install in 10 seconds</h2>
+    <p class="sec-lead">No installer wizard. The app sets itself up the first time you run it.</p>
+    <div class="steps">
+      <div class="step"><b>Download EyeBreak.exe</b><span>One small file, about 0.5 MB.</span></div>
+      <div class="step"><b>Run it</b><span>If Windows SmartScreen appears, click <i>More info</i>, then <i>Run anyway</i>. The app isn't code-signed yet.</span></div>
+      <div class="step"><b>That's it</b><span>The badge appears on the right edge. EyeBreak copies itself to your user folder and starts with Windows.</span></div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <h2>Questions</h2>
+    <details><summary>Why every 20 minutes?</summary><p>It's the well-known 20-20-20 habit: every 20 minutes, look at something about 20 feet (6 m) away for at least 20 seconds. EyeBreak gives you a full minute and guides you through it.</p></details>
+    <details><summary>Does it pause or slow down my other apps?</summary><p>No. The break screen is just a black window on top. Nothing is paused, closed or put to sleep. EyeBreak itself uses roughly 0% CPU while it waits.</p></details>
+    <details><summary>What happens if I lock my PC or it goes to sleep?</summary><p>If you're away for a minute or more, that counts as a rest, so the 20 minutes start fresh when you're back.</p></details>
+    <details><summary>Does it collect any data?</summary><p>No. There's no network access at all. Meeting detection reads Windows' own "mic/camera in use" status and window titles locally on your PC.</p></details>
+    <details><summary>How do I update or uninstall it?</summary><p>To update, download the new EyeBreak.exe and run it; it replaces the old version. To remove it, click the badge and choose <i>Uninstall</i>.</p></details>
+  </section>
+
+  <div class="final">
+    <h2>Give your eyes a minute.</h2>
+    <p class="sec-lead" style="margin: 0 auto 26px">Free, tiny and out of your way.</p>
+    <a class="btn primary" href="https://github.com/agresh-agrawal/eyebreak/releases/latest/download/EyeBreak.exe">Download for Windows</a>
+  </div>
+
+  <footer>
+    <span>EyeBreak for Windows</span>
+    <span><a href="https://github.com/agresh-agrawal/eyebreak">Source on GitHub</a> · <a href="https://github.com/agresh-agrawal/eyebreak/releases">All releases</a></span>
+  </footer>
+</div>
+</body>
+</html>

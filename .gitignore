@@ -1,0 +1,6 @@
+/target
+/dist
+# machine-local: build output dir outside this path (spaces break dlltool)
+/.cargo/
+/.claude/
+*.res
